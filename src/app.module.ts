@@ -7,10 +7,13 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 
 @Module({
+  // Configs
   imports: [
     ConfigModule.forRoot({
        isGlobal :true
     }),
+
+    // DB connections
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -21,6 +24,8 @@ import { UserModule } from './user/user.module';
       entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+
+    // Modules
     UserModule,
   ],
   controllers: [AppController],

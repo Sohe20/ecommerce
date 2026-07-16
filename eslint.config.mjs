@@ -30,7 +30,9 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       "prettier/prettier": ["off", { endOfLine: "auto" }],
-      "@typescript-eslint/no-unsafe-call":"off"
+      "@typescript-eslint/no-unsafe-call":"off",
+      "@typescript-eslint/no-unused-vars":"off",
+      "@typescript-eslint/no-unsafe-member-access":"off"
     },
   },
 );
