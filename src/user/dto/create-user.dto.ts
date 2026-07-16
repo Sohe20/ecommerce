@@ -1,4 +1,3 @@
-
 import {
   IsEnum,
   IsNotEmpty,
@@ -15,7 +14,7 @@ export class CreateUserDto {
   @IsString({message:'موبایل باید یک رشته باشد'})
   @Length(11, 11, { message: 'شماره موبایل باید 11 رقم باشد' })
   @IsNotEmpty({message:'موبایل نمیتواند خالی باشد'})
-  //  @Matches('/^ .{11}$/', '' , {message:'شماره موبایل باید 11 رقم باشد'})
+  // @Matches(/^ .{11} $/ , {message:'شماره موبایل باید 11 رقم باشد'})
   @Transform(({value}) => value.trim())
   mobile: string;
 

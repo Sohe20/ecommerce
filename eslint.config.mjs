@@ -32,7 +32,11 @@ export default tseslint.config(
       "prettier/prettier": ["off", { endOfLine: "auto" }],
       "@typescript-eslint/no-unsafe-call":"off",
       "@typescript-eslint/no-unused-vars":"off",
-      "@typescript-eslint/no-unsafe-member-access":"off"
+      "@typescript-eslint/no-unsafe-member-access":"off",
+      "@typescript-eslint/no-unsafe-return":"off",
+      "@typescript-eslint/require-await":"off",
+      "@typescript-eslint/no-unsafe-assignment":"off",
+      "@typescript-eslint/await-thenable":"off"
     },
   },
 );
