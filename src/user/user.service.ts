@@ -18,15 +18,21 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const alreadyUser = await this.findOneByMobile(createUserDto.mobile, true);
-    if (alreadyUser)
-      throw new BadRequestException(
-        'کاربری با این شماره موبایل در سیستم ثبت شده ',
-      );
-
-    const newUser = this.userRepository.create(createUserDto);
+    try{
+      const alreadyUser = await this.findOneByMobile(createUserDto.mobile, true);
+    if (!alreadyUser){
+      const newUser = this.userRepository.create(createUserDto);
 
     return await this.userRepository.save(newUser);
+    }
+      
+    throw new BadRequestException(
+        'کاربری با این شماره موبایل در سیستم ثبت شده ',
+      );
+    }catch(error){
+      throw error
+    }
+  
   }
 
   async findAll(role?: userRoleEnum, limit: number = 10, page: number = 1) {
