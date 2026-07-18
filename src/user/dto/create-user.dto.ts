@@ -26,7 +26,7 @@ export class CreateUserDto {
 
   @IsString({message:'رمز عبور باید یک رشته باشد'})
   @IsOptional()
-  // @MinLength(8,{message:'رمز عبور باید حداقل 8 کارکتر باشد'})
+  @MinLength(8,{message:'رمز عبور باید حداقل 8 کارکتر باشد'})
   @MaxLength(16,{message:'رمز عبور باید حداکثر 16 کارکتر باشد'})
   password:string
 
