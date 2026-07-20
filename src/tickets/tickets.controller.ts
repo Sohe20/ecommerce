@@ -1,0 +1,67 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
+import { TicketsService } from './tickets.service';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
+import express from 'express';
+
+@Controller('tickets')
+export class TicketsController {
+  constructor(private readonly ticketsService: TicketsService) {}
+
+  @Post()
+  async create(
+    @Body() createTicketDto: CreateTicketDto,
+    @Res() res: express.Response,
+  ) {
+    const newTicket = await this.ticketsService.create(createTicketDto);
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data: newTicket,
+      message: ' تیکت  با موفقیت ثبت شد',
+    });
+  }
+
+  @Get()
+  async findAll(@Res() res: express.Response) {
+    const tickets = await this.ticketsService.findAll();
+
+     return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data: tickets,
+      message: 'تیکت ها با موفقیت دریافت شد',
+    });
+  }
+
+  @Get(':id')
+  async  findOne(@Param('id') id: string , @Res() res: express.Response) {
+    const ticket = await this.ticketsService.findOne(+id);
+
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data: ticket,
+      message: 'تیکت  با موفقیت دریافت شد',
+    });
+
+  }
+
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto) {
+  //   return this.ticketsService.update(+id, updateTicketDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.ticketsService.remove(+id);
+  // }
+}

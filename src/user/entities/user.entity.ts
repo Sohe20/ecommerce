@@ -2,6 +2,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn , UpdateDateColumn } from "typeorm";
 import userRoleEnum from "../enum/userRoleEnum";
 import { Address } from "src/address/entities/address.entity";
+import { Ticket } from "src/tickets/entities/ticket.entity";
 
 
 
@@ -23,9 +24,11 @@ export class User {
     @Column({type:'enum' , enum: userRoleEnum , default : userRoleEnum.NormalUser})
     role : userRoleEnum
 
-    @OneToMany(()=>Address , (Address)=> Address.user)
+    @OneToMany(()=>Address , (address)=> address.user)
     addresses : Address[];
-
+ 
+    @OneToMany(()=>Ticket , (ticket)=> ticket.user)
+    tickets : Ticket[];
 
     @CreateDateColumn()
     created_at:Date

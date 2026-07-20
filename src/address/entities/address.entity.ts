@@ -25,7 +25,7 @@ export class Address {
     @Column({nullable:true})
     description : string
 
-    @ManyToOne(()=> User , (User)=>User.addresses)
+    @ManyToOne(()=> User , (user)=>user.addresses)
     user:User;
 
 
