@@ -15,24 +15,24 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
-    try{
+    try {
       const alreadyUser = await this.findOneByMobile(createUserDto.mobile, true);
-    if (!alreadyUser){
-      const newUser = this.userRepository.create(createUserDto);
+      if (!alreadyUser) {
+        const newUser = this.userRepository.create(createUserDto);
 
-    return await this.userRepository.save(newUser);
-    }
-      
-    throw new BadRequestException(
+        return await this.userRepository.save(newUser);
+      }
+
+      throw new BadRequestException(
         'کاربری با این شماره موبایل در سیستم ثبت شده ',
       );
-    }catch(error){
+    } catch (error) {
       throw error
     }
-  
+
   }
 
   async findAll(role?: userRoleEnum, limit: number = 10, page: number = 1) {
@@ -64,6 +64,48 @@ export class UserService {
 
     return user;
   }
+
+ async addProductToBasket(userId: number, product) {
+  const user = await this.userRepository.findOne({
+    where: { id: userId },
+    relations: { basket_items: true },
+  })
+
+  if (!user) {
+    throw new NotFoundException('کاربری پیدا نشد')
+  }
+
+  user.basket_items.push(product)
+
+  return await this.userRepository.save(user)
+}
+
+async removeProductFromBasket(userId: number, productId: number) {
+  const user = await this.userRepository.findOne({
+    where: { id: userId },
+    relations: { basket_items: true },
+  });
+
+  if (!user) {
+    throw new NotFoundException('کاربری پیدا نشد');
+  }
+
+  // پیدا کردن ایندکس محصول مورد نظر در سبد خرید
+  const productIndex = user.basket_items.findIndex(
+    (item) => item.id === productId
+  );
+
+  // اگر محصول در سبد خرید وجود نداشت
+  if (productIndex === -1) {
+    throw new NotFoundException('محصول مورد نظر در سبد خرید یافت نشد');
+  }
+
+  // حذف محصول از سبد خرید
+  user.basket_items.splice(productIndex, 1);
+
+  // ذخیره تغییرات
+  return await this.userRepository.save(user);
+}
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);

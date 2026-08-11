@@ -3,16 +3,17 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import express from 'express';
+import { CreateBookmarkProductDto } from './dto/create-bookmark-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Post()
-  async create(@Body() createProductDto: CreateProductDto , @Res() res: express.Response) {
+  async create(@Body() createProductDto: CreateProductDto, @Res() res: express.Response) {
     const product = await this.productsService.create(createProductDto);
 
-     return res.status(HttpStatus.CREATED).json({
+    return res.status(HttpStatus.CREATED).json({
       statusCode: HttpStatus.CREATED,
       data: product,
       message: 'محصول جدید با موفقیت ساخته شد',
@@ -31,10 +32,10 @@ export class ProductsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number , @Res() res: express.Response) {
+  async findOne(@Param('id', ParseIntPipe) id: number, @Res() res: express.Response) {
     const product = await this.productsService.findOne(id);
 
-     return res.status(HttpStatus.OK).json({
+    return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: product,
       message: 'محصول موردنظر با موفقیت دریافت شد',
@@ -43,8 +44,8 @@ export class ProductsController {
 
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: number, 
-    @Body() updateProductDto: UpdateProductDto , 
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto,
     @Res() res: express.Response
   ) {
     const product = await this.productsService.update(id, updateProductDto);
@@ -58,7 +59,7 @@ export class ProductsController {
 
   @Delete(':id')
   async remove(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: number,
     @Res() res: express.Response
   ) {
     const result = await this.productsService.remove(id);
@@ -156,6 +157,32 @@ export class ProductsController {
       data: product,
       message: 'محصول با وضعیت بوکمارک با موفقیت دریافت شد',
     });
+  }
+
+
+
+  @Post('add-basket')
+  async addProductToBasket(@Body() bookmarkProduct : CreateBookmarkProductDto, @Res() res: express.Response) {
+   const addedItems = await this.productsService.addItemToBasket(bookmarkProduct.userId , bookmarkProduct.productId)
+ 
+   return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: addedItems,
+      message: 'محصول به سبد خرید اضافه شد',
+    });
+
+  }
+
+  @Post('remove-basket')
+  async removeProductToBasket(@Body() bookmarkProduct : CreateBookmarkProductDto, @Res() res: express.Response) {
+   const addedItems = await this.productsService.removeItemFromBasket(bookmarkProduct.userId , bookmarkProduct.productId)
+ 
+   return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: addedItems,
+      message: 'محصول از سبد خرید حذف شد',
+    });
+
   }
 
 

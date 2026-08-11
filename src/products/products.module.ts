@@ -6,9 +6,13 @@ import { Product } from './entities/product.entity';
 import { Category } from 'src/categories/entities/category.entity';
 import { BookmarkProduct } from './entities/product-bookmark.entity';
 import { User } from 'src/user/entities/user.entity';
+import { UsersModule } from 'src/user/user.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Product , Category , BookmarkProduct, User])],
+  imports:[
+    TypeOrmModule.forFeature([Product , Category , BookmarkProduct, User]),
+    UsersModule
+  ],
   controllers: [ProductsController],
   providers: [ProductsService],
 })

@@ -1,6 +1,7 @@
 import { Category } from "src/categories/entities/category.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BookmarkProduct } from "./product-bookmark.entity";
+import { User } from "src/user/entities/user.entity";
 
 
 @Entity('products')
@@ -33,6 +34,11 @@ export class Product {
         inverseJoinColumn:{name : 'category_id', referencedColumnName:'id'}
     })
     categories : Category[]
+
+
+
+    @ManyToMany(()=> User , (user)=> user.basket_items)
+    baskets :User[]
 
 
      // رابطه با بوکمارک‌ها
