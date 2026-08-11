@@ -1,57 +1,62 @@
 // src/orders/entities/order.entity.ts
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+    ManyToOne,
+    JoinColumn,
+    OneToMany,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Address } from '../../address/entities/address.entity';
 import { OrderStatus } from '../enums/order-status.enum';
+import { OrderItem } from './order-item.entity';
 
 
 
 
 @Entity('orders')
 export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
 
-  @ManyToOne(() => User, (user) => user.orders)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+    @ManyToOne(() => User, (user) => user.orders)
+    @JoinColumn({ name: 'user_id' })
+    user: User;
 
-  @Column({
-    type: 'enum',
-    enum: OrderStatus,
-    default: OrderStatus.PENDING,
-  })
-  status: OrderStatus;
-
-
-  @Column({ type: 'timestamp', name: 'payed_time', nullable: true })
-  payedTime: Date;
+    @Column({
+        type: 'enum',
+        enum: OrderStatus,
+        default: OrderStatus.PENDING,
+    })
+    status: OrderStatus;
 
 
-  @ManyToOne(() => Address, (address) => address.orders)
-  @JoinColumn({ name: 'address_id' })
-  address: Address;
-
-  @Column({ type: 'bigint', name: 'total_price' })
-  totalPrice: number;
-
-  @Column({ type: 'varchar', name: 'discount_code', nullable: true })
-  discountCode: number | null;
+    @Column({ type: 'timestamp', name: 'payed_time', nullable: true })
+    payedTime: Date;
 
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+    @ManyToOne(() => Address, (address) => address.orders)
+    @JoinColumn({ name: 'address_id' })
+    address: Address;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+    @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+    orderItems: OrderItem[];
+
+
+    @Column({ type: 'bigint', name: 'total_price' })
+    totalPrice: number;
+
+    @Column({ type: 'varchar', name: 'discount_code', nullable: true })
+    discountCode: number | null;
+
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

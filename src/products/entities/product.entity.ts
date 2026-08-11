@@ -2,6 +2,7 @@ import { Category } from "src/categories/entities/category.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BookmarkProduct } from "./product-bookmark.entity";
 import { User } from "src/user/entities/user.entity";
+import { OrderItem } from "src/orders/entities/order-item.entity";
 
 
 @Entity('products')
@@ -40,6 +41,8 @@ export class Product {
     @ManyToMany(()=> User , (user)=> user.basket_items)
     baskets :User[]
 
+    @OneToMany(()=> OrderItem , (orderItem) => orderItem.product)
+    orderItems : OrderItem[]
 
      // رابطه با بوکمارک‌ها
   @OneToMany(() => BookmarkProduct, (bookmark) => bookmark.productId)

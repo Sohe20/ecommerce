@@ -42,23 +42,23 @@ export class CategoriesService {
     return this.categoryRepository.save(category!);
   }
 
-  async removeOnlyCategory(id: number) {
-    const  category : Category | null = await this.findOne(id);
+  // async removeOnlyCategory(id: number) {
+  //   const  category : Category | null = await this.findOne(id);
     
-    // delete product related to this category
-    category.products=[]
-    await this.categoryRepository.save(category)
+  //   // delete product related to this category
+  //   category.products=[]
+  //   await this.categoryRepository.save(category)
 
-    // delete category
-    await this.categoryRepository.delete(category)
-  }
+  //   // delete category
+  //   await this.categoryRepository.delete(category)
+  // }
 
-  async safeRemove(id:number) :Promise<void>{
-    const  category : Category | null = await this.findOne(id);
-    if(category.products.length > 0) throw new BadRequestException('این دسته بندی بیشتر از یک محصول دارد')
+  // async safeRemove(id:number) :Promise<void>{
+  //   const  category : Category | null = await this.findOne(id);
+  //   if(category.products.length > 0) throw new BadRequestException('این دسته بندی بیشتر از یک محصول دارد')
 
-    await this.categoryRepository.delete(category)
-  }
+  //   await this.categoryRepository.delete(category)
+  // }
 
 
   async remove(id : number) : Promise<void>{

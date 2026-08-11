@@ -54,25 +54,25 @@ export class CategoriesController {
 
   }
 
-  @Delete('remove-only-category/:id')
-  async  removeonly(@Param('id') id: string, @Res() res: express.Response) {
-     await this.categoriesService.removeOnlyCategory(+id);
+  // @Delete('remove-only-category/:id')
+  // async  removeonly(@Param('id') id: string, @Res() res: express.Response) {
+  //    await this.categoriesService.removeOnlyCategory(+id);
 
-     return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      message: 'دسته بندی مورد نظر با موفقیت حذف شد',
-    });
-  }
+  //    return res.status(HttpStatus.OK).json({
+  //     statusCode: HttpStatus.OK,
+  //     message: 'دسته بندی مورد نظر با موفقیت حذف شد',
+  //   });
+  // }
 
-  @Delete('safe-remove/:id')
-  async  safeRemove(@Param('id') id: string, @Res() res: express.Response) {
-     await this.categoriesService.safeRemove(+id);
+  // @Delete('safe-remove/:id')
+  // async  safeRemove(@Param('id') id: string, @Res() res: express.Response) {
+  //    await this.categoriesService.safeRemove(+id);
 
-     return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      message: 'دسته بندی مورد نظر با موفقیت حذف شد',
-    });
-  }
+  //    return res.status(HttpStatus.OK).json({
+  //     statusCode: HttpStatus.OK,
+  //     message: 'دسته بندی مورد نظر با موفقیت حذف شد',
+  //   });
+  // }
 
    @Delete('remove/:id')
   async  remove(@Param('id') id: string, @Res() res: express.Response) {
