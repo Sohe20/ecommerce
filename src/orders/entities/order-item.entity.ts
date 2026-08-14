@@ -28,6 +28,9 @@ export class OrderItem {
     product: Product;
 
 
+    @Column()
+    quantity: number;
+
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;

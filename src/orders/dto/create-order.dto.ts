@@ -1,4 +1,3 @@
-// src/orders/dto/create-order.dto.ts
 import {
     IsNumber,
     IsOptional,
@@ -25,7 +24,6 @@ export class CreateOrderDto {
     @IsOptional()
     status?: OrderStatus;
 
-
     @IsDateString({}, { message: 'زمان پرداخت باید یک تاریخ معتبر باشد' })
     @IsOptional()
     payedTime?: Date;
@@ -40,13 +38,13 @@ export class CreateOrderDto {
     @IsNotEmpty({ message: 'قیمت کل نمی‌تواند خالی باشد' })
     totalPrice: number;
 
+
     @IsString({ message: 'کد تخفیف باید یک رشته باشد' })
     @IsOptional()
     discountCode?: string | null;
 
-
     @IsArray()
-    @ValidateNested({each : true})
-    @Type(()=> CreateOrderItemDto)
-    items : CreateOrderItemDto[]
+    @ValidateNested({ each: true })
+    @Type(() => CreateOrderItemDto)
+    items: CreateOrderItemDto[];
 }

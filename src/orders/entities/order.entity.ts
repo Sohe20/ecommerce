@@ -36,7 +36,7 @@ export class Order {
 
 
     @Column({ type: 'timestamp', name: 'payed_time', nullable: true })
-    payedTime: Date;
+    payedTime: Date | null;
 
 
     @ManyToOne(() => Address, (address) => address.orders)
@@ -51,7 +51,7 @@ export class Order {
     totalPrice: number;
 
     @Column({ type: 'varchar', name: 'discount_code', nullable: true })
-    discountCode: number | null;
+    discountCode: string | null;
 
 
     @CreateDateColumn()

@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  Res,
+  ParseIntPipe,
+} from '@nestjs/common';
+import express from 'express';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -8,27 +20,65 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  async create(
+    @Body() createOrderDto: CreateOrderDto,
+    @Res() res: express.Response,
+  ) {
+    const order = await this.ordersService.create(createOrderDto);
+    return res.status(HttpStatus.CREATED).json({
+      statusCode: HttpStatus.CREATED,
+      data: order,
+      message: 'سفارش موردنظر با موفقیت ثبت شد',
+    });
   }
 
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  async findAll(@Res() res: express.Response) {
+    const orders = await this.ordersService.findAll();
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: orders,
+      message: 'لیست سفارش‌ها با موفقیت دریافت شد',
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: express.Response,
+  ) {
+    const order = await this.ordersService.findOne(id);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: order,
+      message: 'سفارش موردنظر با موفقیت دریافت شد',
+    });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateOrderDto: UpdateOrderDto,
+    @Res() res: express.Response,
+  ) {
+    const order = await this.ordersService.update(id, updateOrderDto);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: order,
+      message: 'سفارش موردنظر با موفقیت بروزرسانی شد',
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Res() res: express.Response,
+  ) {
+    const result = await this.ordersService.remove(id);
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: result,
+      message: 'سفارش موردنظر با موفقیت حذف شد',
+    });
   }
 }
