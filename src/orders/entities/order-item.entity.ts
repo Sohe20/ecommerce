@@ -18,7 +18,7 @@ export class OrderItem {
 
 
 
-    @ManyToOne(() => Order, (order) => order.orderItems)
+    @ManyToOne(() => Order, (order) => order.items)
     @JoinColumn()
     order: Order;
 

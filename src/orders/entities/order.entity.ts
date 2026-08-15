@@ -44,10 +44,10 @@ export class Order {
     address: Address;
 
     @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
-    orderItems: OrderItem[];
+    items: OrderItem[];
 
 
-    @Column({ type: 'bigint', name: 'total_price' })
+    @Column({ type: 'bigint', default:0 })
     totalPrice: number;
 
     @Column({ type: 'varchar', name: 'discount_code', nullable: true })

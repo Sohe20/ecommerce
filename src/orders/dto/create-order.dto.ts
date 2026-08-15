@@ -33,10 +33,6 @@ export class CreateOrderDto {
     @IsPositive({ message: 'شناسه آدرس باید بزرگتر از ۰ باشد' })
     addressId: number;
 
-    @IsNumber({}, { message: 'قیمت کل باید یک عدد باشد' })
-    @Min(0, { message: 'قیمت کل باید بزرگتر یا مساوی ۰ باشد' })
-    @IsNotEmpty({ message: 'قیمت کل نمی‌تواند خالی باشد' })
-    totalPrice: number;
 
 
     @IsString({ message: 'کد تخفیف باید یک رشته باشد' })

@@ -3,88 +3,87 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
-import { Product } from '../products/entities/product.entity';
 import { UserService } from '../user/user.service';
 import { AddressService } from '../address/address.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderStatus } from './enums/order-status.enum';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
+    private readonly productService: ProductsService,
     private readonly userService: UserService,
     private readonly addressService: AddressService,
     private readonly dataSource: DataSource,
-  ) {}
+
+  ) { }
 
   async create(createOrderDto: CreateOrderDto) {
-    const { userId, addressId, items, totalPrice, discountCode, status, payedTime } =
-      createOrderDto;
-
-    // فرض کردم UserService.findOne و AddressService.findOne یا entity رو برمی‌گردونن
-    // یا خودشون در صورت نبود، NotFoundException پرتاب می‌کنن (پترن استاندارد Nest CLI)
-    const user = await this.userService.findOne(userId);
+    // get user
+    const user = await this.userService.findOne(createOrderDto.userId);
     if (!user) {
       throw new NotFoundException('کاربر مورد نظر یافت نشد');
     }
 
-    const address = await this.addressService.findOne(addressId);
+    // get address
+    const address = await this.addressService.findOne(createOrderDto.addressId);
     if (!address) {
       throw new NotFoundException('آدرس مورد نظر یافت نشد');
     }
 
-    const productIds = items.map((item) => item.productId);
-    const products = await this.productRepository.findBy({
-      id: In(productIds),
+    // create temp order
+    const order = this.orderRepository.create({
+      user,
+      address,
+      discountCode: createOrderDto.discountCode,
+      status: createOrderDto.status || OrderStatus.PENDING,
     });
 
-    if (products.length !== productIds.length) {
-      throw new NotFoundException('برخی از محصولات یافت نشدند');
-    }
+    const saveOrder = await this.orderRepository.save(order)
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    // asign order items to order
+    let totalPrice = 0
+    if (createOrderDto.items && createOrderDto.items.length > 0) {
+      const orderItems = createOrderDto.items.map(async (item) => {
+        const product = await this.productService.findOne(item.productId)
+        totalPrice += product.price
 
-    try {
-      const order = queryRunner.manager.create(Order, {
-        user,
-        address,
-        totalPrice,
-        discountCode: discountCode ?? null,
-        status: status ?? OrderStatus.PENDING,
-        payedTime: payedTime ?? null,
-      });
-      const savedOrder = await queryRunner.manager.save(order);
 
-      const orderItems = items.map((item) => {
-        const product = products.find((p) => p.id === item.productId);
-        return queryRunner.manager.create(OrderItem, {
-          order: savedOrder,
+        const orderItem = await this.orderItemRepository.create({
+          order: saveOrder,
           product,
           quantity: item.quantity,
-        });
-      });
-      await queryRunner.manager.save(orderItems);
+        })
 
-      await queryRunner.commitTransaction();
-      return this.findOne(savedOrder.id);
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
+        return this.orderItemRepository.save(orderItem)
+      })
+
+      await Promise.all(orderItems)
     }
+    // update total price in order
+    await this.orderRepository.update({ id: saveOrder.id }, { totalPrice: totalPrice })
+
+    const returned_order = this.orderRepository.findOne({
+      where: { id: saveOrder.id },
+      relations: {
+        user: true,
+        address: true,
+        items: { product: true },
+      },
+    });
+
+    return returned_order
   }
 
   findAll() {
     return this.orderRepository.find({
-      relations: { user: true, address: true, orderItems: { product: true } },
+      relations: { user: true, address: true, items: { product: true } },
       order: { createdAt: 'DESC' },
     });
   }
@@ -92,7 +91,7 @@ export class OrdersService {
   async findOne(id: number) {
     const order = await this.orderRepository.findOne({
       where: { id },
-      relations: { user: true, address: true, orderItems: { product: true } },
+      relations: { user: true, address: true, items: { product: true } },
     });
 
     if (!order) {
@@ -123,9 +122,9 @@ export class OrdersService {
       order.address = address;
     }
 
-    if (updateOrderDto.totalPrice !== undefined) {
-      order.totalPrice = updateOrderDto.totalPrice;
-    }
+    // if (updateOrderDto.totalPrice !== undefined) {
+    //   order.totalPrice = updateOrderDto.totalPrice;
+    // }
 
     if (updateOrderDto.discountCode !== undefined) {
       order.discountCode = updateOrderDto.discountCode;

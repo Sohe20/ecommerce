@@ -39,6 +39,7 @@ export default tseslint.config(
       "@typescript-eslint/await-thenable":"off",
       "no-useless-catch":"off",
       "@typescript-eslint/no-unnecessary-type-assertion":"off",
+      "prefer-const" :"off"
       
     },
   },
