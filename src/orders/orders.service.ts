@@ -9,6 +9,9 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderStatus } from './enums/order-status.enum';
 import { ProductsService } from 'src/products/products.service';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+
 
 @Injectable()
 export class OrdersService {
@@ -21,6 +24,7 @@ export class OrdersService {
     private readonly userService: UserService,
     private readonly addressService: AddressService,
     private readonly dataSource: DataSource,
+    private readonly httpService: HttpService
 
   ) { }
 
@@ -138,5 +142,35 @@ export class OrdersService {
     const order = await this.findOne(id);
     await this.orderRepository.remove(order);
     return { message: 'سفارش با موفقیت حذف شد' };
+  }
+
+
+  async startPayment(order_id: number) {
+    const order = await this.findOne(order_id)
+    const request = await this.httpService.post("https://gateway.zibal.ir/v1/request",
+      { merchant: 'zibal', amount: (order.totalPrice * 10) , callbackUrl:'https://localhost'})
+
+    const responseBody = await lastValueFrom(request)
+
+    return responseBody.data
+
+  }
+
+
+  async verifyPayment(trackId: number , order_id : number) {
+    const request = this.httpService.post("https://gateway.zibal.ir/v1/verify/",
+      { merchant: 'zibal', trackId : trackId})
+
+    const responseBody = await lastValueFrom(request)
+
+    if(responseBody.data.result === 100){
+      const order = await this.findOne(order_id)
+      order.status = OrderStatus.COMPLETED
+      await this.orderRepository.save(order)
+    }
+
+
+    return responseBody.data
+
   }
 }
